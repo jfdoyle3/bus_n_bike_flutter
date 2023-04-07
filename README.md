@@ -1,8 +1,4 @@
-# Starter Repository Template
+# Bus n Bike
 
-This Repository has a customized gitignore file
-ignores:
-VS CODE, Visual Studio, Eclipse IDE, Intellij IDEA, Python,
-Gradle, Maven.
-
-- added Visual Studio in gitignore 1/31/2023
+Flutter project.
+App that creates routes to places bus routes and bike to destinations.
