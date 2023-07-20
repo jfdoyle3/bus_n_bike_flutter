@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   _init() {
     _cameraPosition = CameraPosition(
-      target: LatLng(11.576262, 104.92222),
+      target: LatLng(41.87092932, -71.42788283),
       zoom: 15, // example long / lat for initalizing
     );
   }
