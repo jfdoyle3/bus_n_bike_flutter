@@ -1,32 +1,80 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bus_n_bike/pages/home_page.dart';
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp(
-    homeScreen: HomePage(),
-  ));
-}
+import 'animate_camera.dart';
+import 'lite_mode.dart';
+import 'map_click.dart';
+import 'map_coordinates.dart';
+import 'map_ui.dart';
+import 'marker_icons.dart';
+import 'move_camera.dart';
+import 'padding.dart';
+import 'page.dart';
+import 'place_circle.dart';
+import 'place_marker.dart';
+import 'place_polygon.dart';
+import 'place_polyline.dart';
+import 'scrolling_map.dart';
+import 'snapshot.dart';
+import 'tile_overlay.dart';
 
-class MyApp extends StatefulWidget {
-  final Widget? homeScreen;
+final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
+  const MapUiPage(),
+  const MapCoordinatesPage(),
+  const MapClickPage(),
+  const AnimateCameraPage(),
+  const MoveCameraPage(),
+  const PlaceMarkerPage(),
+  const MarkerIconsPage(),
+  const ScrollingMapPage(),
+  const PlacePolylinePage(),
+  const PlacePolygonPage(),
+  const PlaceCirclePage(),
+  const PaddingPage(),
+  const SnapshotPage(),
+  const LiteModePage(),
+  const TileOverlayPage(),
+];
 
-  const MyApp({
-    Key? key,
-    this.homeScreen,
-  }) : super(key: key);
+/// MapsDemo is the Main Application.
+class MapsDemo extends StatelessWidget {
+  /// Default Constructor
+  const MapsDemo({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+  void _pushPage(BuildContext context, GoogleMapExampleAppPage page) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => Scaffold(
+              appBar: AppBar(title: Text(page.title)),
+              body: page,
+            )));
+  }
 
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: this.widget.homeScreen,
+    return Scaffold(
+      appBar: AppBar(title: const Text('GoogleMaps examples')),
+      body: ListView.builder(
+        itemCount: _allPages.length,
+        itemBuilder: (_, int index) => ListTile(
+          leading: _allPages[index].leading,
+          title: Text(_allPages[index].title),
+          onTap: () => _pushPage(context, _allPages[index]),
+        ),
+      ),
     );
   }
+}
+
+void main() {
+  final GoogleMapsFlutterPlatform mapsImplementation =
+      GoogleMapsFlutterPlatform.instance;
+  if (mapsImplementation is GoogleMapsFlutterAndroid) {
+    mapsImplementation.useAndroidViewSurface = true;
+  }
+  runApp(const MaterialApp(home: MapsDemo()));
 }
