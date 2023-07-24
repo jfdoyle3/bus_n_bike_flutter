@@ -1,80 +1,72 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'animate_camera.dart';
-import 'lite_mode.dart';
-import 'map_click.dart';
-import 'map_coordinates.dart';
-import 'map_ui.dart';
-import 'marker_icons.dart';
-import 'move_camera.dart';
-import 'padding.dart';
-import 'page.dart';
-import 'place_circle.dart';
-import 'place_marker.dart';
-import 'place_polygon.dart';
-import 'place_polyline.dart';
-import 'scrolling_map.dart';
-import 'snapshot.dart';
-import 'tile_overlay.dart';
+void main() {
+  runApp(MyApp());
+}
 
-final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
-  const MapUiPage(),
-  const MapCoordinatesPage(),
-  const MapClickPage(),
-  const AnimateCameraPage(),
-  const MoveCameraPage(),
-  const PlaceMarkerPage(),
-  const MarkerIconsPage(),
-  const ScrollingMapPage(),
-  const PlacePolylinePage(),
-  const PlacePolygonPage(),
-  const PlaceCirclePage(),
-  const PaddingPage(),
-  const SnapshotPage(),
-  const LiteModePage(),
-  const TileOverlayPage(),
-];
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Home(),
+    );
+  }
+}
 
-/// MapsDemo is the Main Application.
-class MapsDemo extends StatelessWidget {
-  /// Default Constructor
-  const MapsDemo({super.key});
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
 
-  void _pushPage(BuildContext context, GoogleMapExampleAppPage page) {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (_) => Scaffold(
-              appBar: AppBar(title: Text(page.title)),
-              body: page,
-            )));
+class _HomeState extends State<Home> {
+  GoogleMapController? mapController; //contrller for Google map
+  Set<Marker> markers = Set(); //markers for google map
+  LatLng showLocation = LatLng(27.7089427, 85.3086209);
+  //location to show in map
+
+  @override
+  void initState() {
+    markers.add(Marker(
+      //add marker on google map
+      markerId: MarkerId(showLocation.toString()),
+      position: showLocation, //position of marker
+      infoWindow: InfoWindow(
+        //popup info
+        title: 'My Custom Title ',
+        snippet: 'My Custom Subtitle',
+      ),
+      icon: BitmapDescriptor.defaultMarker, //Icon for Marker
+    ));
+
+    //you can add more markers here
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('GoogleMaps examples')),
-      body: ListView.builder(
-        itemCount: _allPages.length,
-        itemBuilder: (_, int index) => ListTile(
-          leading: _allPages[index].leading,
-          title: Text(_allPages[index].title),
-          onTap: () => _pushPage(context, _allPages[index]),
+      appBar: AppBar(
+        title: Text("Google Map in Flutter"),
+        backgroundColor: Colors.deepPurpleAccent,
+      ),
+      body: GoogleMap(
+        //Map widget from google_maps_flutter package
+        zoomGesturesEnabled: true, //enable Zoom in, out on map
+        initialCameraPosition: CameraPosition(
+          //innital position in map
+          target: showLocation, //initial position
+          zoom: 10.0, //initial zoom level
         ),
+        markers: markers, //markers to show on map
+        mapType: MapType.normal, //map type
+        onMapCreated: (controller) {
+          //method called when map is created
+          setState(() {
+            mapController = controller;
+          });
+        },
       ),
     );
   }
-}
-
-void main() {
-  final GoogleMapsFlutterPlatform mapsImplementation =
-      GoogleMapsFlutterPlatform.instance;
-  if (mapsImplementation is GoogleMapsFlutterAndroid) {
-    mapsImplementation.useAndroidViewSurface = true;
-  }
-  runApp(const MaterialApp(home: MapsDemo()));
 }
